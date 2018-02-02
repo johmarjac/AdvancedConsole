@@ -1,11 +1,11 @@
 using System;
-using Xunit;
+using NUnit.Framework;
 
 namespace AdvancedConsole.Tests
 {
     public class Core
     {
-        [Fact]
+        [Test]
         public void HexView()
         {
             var rnd = new Random();
