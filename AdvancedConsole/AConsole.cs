@@ -6,32 +6,37 @@ namespace AdvancedConsole
 {
     public static class AConsole
     {
+        private static object hexViewLock = new object();
+
         public static void WriteHexView(byte[] data, bool displayOffset = true, bool displayAscii = true, int bytesPerRow = 16)
         {
-            for(int i = 0; i < data.Length; i += bytesPerRow)
+            lock(hexViewLock)
             {
-                var remainingBytes = data.Length - i;
-                var amtbytesThisRow = 0;
+                for (int i = 0; i < data.Length; i += bytesPerRow)
+                {
+                    var remainingBytes = data.Length - i;
+                    var amtbytesThisRow = 0;
 
-                if (remainingBytes >= bytesPerRow)
-                    amtbytesThisRow = bytesPerRow;
-                else
-                    amtbytesThisRow = remainingBytes % bytesPerRow;
+                    if (remainingBytes >= bytesPerRow)
+                        amtbytesThisRow = bytesPerRow;
+                    else
+                        amtbytesThisRow = remainingBytes % bytesPerRow;
 
-                var bytesThisRow = data.Skip(i).Take(amtbytesThisRow).ToArray();
+                    var bytesThisRow = data.Skip(i).Take(amtbytesThisRow).ToArray();
 
-                if (displayOffset)
-                    Console.Write("{0:X8}  ", i);
+                    if (displayOffset)
+                        Console.Write("{0:X8}  ", i);
 
-                for(int j = 0; j < bytesThisRow.Length; j++)
-                    Console.Write(j == bytesThisRow.Length - 1 ? "{0:X2}" : "{0:X2} ", bytesThisRow[j]);
-                for (int j = 0; j < bytesPerRow - amtbytesThisRow; j++)
-                    Console.Write("   ");
+                    for (int j = 0; j < bytesThisRow.Length; j++)
+                        Console.Write(j == bytesThisRow.Length - 1 ? "{0:X2}" : "{0:X2} ", bytesThisRow[j]);
+                    for (int j = 0; j < bytesPerRow - amtbytesThisRow; j++)
+                        Console.Write("   ");
 
-                if (displayAscii)
-                    Console.Write("  " + GetStringRepresentation(bytesThisRow));
+                    if (displayAscii)
+                        Console.Write("  " + GetStringRepresentation(bytesThisRow));
 
-                Console.WriteLine();
+                    Console.WriteLine();
+                }
             }
         }
 
